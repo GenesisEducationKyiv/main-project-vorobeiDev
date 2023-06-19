@@ -6,8 +6,6 @@ import (
 	"strings"
 )
 
-const FileName = "emails.txt"
-
 type FileService struct{}
 
 func NewFileService() *FileService {
@@ -17,14 +15,15 @@ func NewFileService() *FileService {
 var ErrEmailExists = errors.New("email already exists")
 
 func (service *FileService) WriteToFile(email string) error {
-	if !service.isFileExists() {
-		_, err := os.Create(FileName)
+	fileName := os.Getenv("DB_FILE_NAME")
+	if !service.isFileExists(fileName) {
+		_, err := os.Create(fileName)
 		if err != nil {
 			return err
 		}
 	}
 
-	fileData, err := os.ReadFile(FileName)
+	fileData, err := os.ReadFile(fileName)
 	if err != nil {
 		return err
 	}
@@ -34,33 +33,34 @@ func (service *FileService) WriteToFile(email string) error {
 		return ErrEmailExists
 	}
 
-	file, err := os.OpenFile(FileName, os.O_APPEND|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}
-	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
 
-		}
-	}(file)
+	defer file.Close()
 
 	_, err = file.WriteString(email + "\n")
+
 	return err
 }
 
-func (service *FileService) isFileExists() bool {
-	_, err := os.Stat(FileName)
+func (service *FileService) isFileExists(fileName string) bool {
+	_, err := os.Stat(fileName)
+
 	return !os.IsNotExist(err)
 }
 
 func (service *FileService) ReadFromFile() ([]string, error) {
-	fileData, err := os.ReadFile(FileName)
+	fileName := os.Getenv("DB_FILE_NAME")
+	fileData, err := os.ReadFile(fileName)
+
 	if err != nil {
 		return nil, err
 	}
 
 	fileString := string(fileData)
 	emails := strings.Split(fileString, "\n")
+
 	return emails, nil
 }

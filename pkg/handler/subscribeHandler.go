@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +18,10 @@ type EmailData struct {
 	Email string `json:"email" binding:"required"`
 }
 
-func NewSubscribeHandler(fileService *service.FileService, validationService *service.ValidationService) *SubscribeHandler {
+func NewSubscribeHandler(
+	fileService *service.FileService,
+	validationService *service.ValidationService,
+) *SubscribeHandler {
 	return &SubscribeHandler{
 		fileService:       fileService,
 		validationService: validationService,
@@ -39,11 +43,12 @@ func (handler *SubscribeHandler) Subscribe(c *gin.Context) {
 
 	err := handler.fileService.WriteToFile(emailData.Email)
 	if err != nil {
-		if err == service.ErrEmailExists {
+		if errors.Is(err, service.ErrEmailExists) {
 			c.JSON(http.StatusConflict, gin.H{"error": "Email already exists"})
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error writing to file"})
 		}
+
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error writing to file"})
+
 		return
 	}
 

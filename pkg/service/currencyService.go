@@ -1,12 +1,12 @@
 package service
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
+	"os"
 )
-
-const BaseUrl = "https://api.coingecko.com"
 
 type CurrencyService struct {
 	httpClient *http.Client
@@ -24,19 +24,23 @@ func NewCurrencyService() *CurrencyService {
 	}
 }
 
-func (service *CurrencyService) GetBTCPriceInUAH() (float64, error) {
-	resp, err := service.httpClient.Get(BaseUrl + "/api/v3/simple/price?ids=bitcoin&vs_currencies=uah")
+func (service *CurrencyService) GetBTCPriceInUAH(ctx context.Context) (float64, error) {
+	baseURL := os.Getenv("BASE_CRYPTO_EXCHANGE_URL")
+	url := baseURL + "/api/v3/simple/price?ids=bitcoin&vs_currencies=uah"
+
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return 0, err
 	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
 
-		}
-	}(resp.Body)
+	response, err := service.httpClient.Do(request)
+	if err != nil {
+		return 0, err
+	}
 
-	body, err := io.ReadAll(resp.Body)
+	defer response.Body.Close()
+
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return 0, err
 	}

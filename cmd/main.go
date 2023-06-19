@@ -2,14 +2,27 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+	"log"
+	"os"
 
 	"github.com/vorobeiDev/crypto-client/pkg/handler"
 	"github.com/vorobeiDev/crypto-client/pkg/service"
 )
 
-const PORT = "5000"
-
 func main() {
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Fatal("Error loading .env file.", err)
+	}
+
+	port := os.Getenv("SERVER_PORT")
+
+	if port == "" {
+		port = "5000"
+	}
+
 	currencyService := service.NewCurrencyService()
 	fileService := service.NewFileService()
 	validationService := service.NewValidationService()
@@ -24,8 +37,9 @@ func main() {
 	r.POST("/subscribe", subscribeHandler.Subscribe)
 	r.POST("/sendEmails", emailHandler.SendEmails)
 
-	err := r.Run(":" + PORT)
+	err = r.Run(":" + port)
+
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }

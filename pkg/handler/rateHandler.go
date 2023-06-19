@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,9 +20,12 @@ func NewRateHandler(currencyService *service.CurrencyService) *RateHandler {
 }
 
 func (handler *RateHandler) GetRate(c *gin.Context) {
-	price, err := handler.currencyService.GetBTCPriceInUAH()
+	ctx := context.Background()
+	price, err := handler.currencyService.GetBTCPriceInUAH(ctx)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid status value"})
+
 		return
 	}
 

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +15,11 @@ type EmailHandler struct {
 	fileService     *service.FileService
 }
 
-func NewEmailHandler(currencyService *service.CurrencyService, emailService *service.EmailService, fileService *service.FileService) *EmailHandler {
+func NewEmailHandler(
+	currencyService *service.CurrencyService,
+	emailService *service.EmailService,
+	fileService *service.FileService,
+) *EmailHandler {
 	return &EmailHandler{
 		currencyService: currencyService,
 		emailService:    emailService,
@@ -23,7 +28,9 @@ func NewEmailHandler(currencyService *service.CurrencyService, emailService *ser
 }
 
 func (handler *EmailHandler) SendEmails(c *gin.Context) {
-	btcRate, err := handler.currencyService.GetBTCPriceInUAH()
+	ctx := context.Background()
+
+	btcRate, err := handler.currencyService.GetBTCPriceInUAH(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching BTC rate"})
 		return
