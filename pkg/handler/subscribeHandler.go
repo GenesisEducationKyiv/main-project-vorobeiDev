@@ -9,26 +9,11 @@ import (
 	"github.com/vorobeiDev/crypto-client/pkg/service"
 )
 
-type SubscribeHandler struct {
-	fileService       *service.FileService
-	validationService *service.ValidationService
-}
-
 type EmailData struct {
 	Email string `json:"email" binding:"required"`
 }
 
-func NewSubscribeHandler(
-	fileService *service.FileService,
-	validationService *service.ValidationService,
-) *SubscribeHandler {
-	return &SubscribeHandler{
-		fileService:       fileService,
-		validationService: validationService,
-	}
-}
-
-func (handler *SubscribeHandler) Subscribe(c *gin.Context) {
+func (h *Handler) Subscribe(c *gin.Context) {
 	var emailData EmailData
 
 	if err := c.ShouldBindJSON(&emailData); err != nil {
@@ -36,12 +21,12 @@ func (handler *SubscribeHandler) Subscribe(c *gin.Context) {
 		return
 	}
 
-	if !handler.validationService.ValidateEmail(emailData.Email) {
+	if !h.services.ValidationService.ValidateEmail(emailData.Email) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email address"})
 		return
 	}
 
-	err := handler.fileService.WriteToFile(emailData.Email)
+	err := h.services.FileService.WriteToFile(emailData.Email)
 	if err != nil {
 		if errors.Is(err, service.ErrEmailExists) {
 			c.JSON(http.StatusConflict, gin.H{"error": "Email already exists"})

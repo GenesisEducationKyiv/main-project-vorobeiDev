@@ -12,10 +12,12 @@ type CurrencyService struct {
 	httpClient *http.Client
 }
 
+type UAHCoin struct {
+	UAH float64 `json:"uah"`
+}
+
 type CoinGeckoResponse struct {
-	Bitcoin struct {
-		UAH float64 `json:"uah"`
-	} `json:"bitcoin"`
+	Bitcoin UAHCoin `json:"bitcoin"`
 }
 
 func NewCurrencyService() *CurrencyService {
@@ -25,7 +27,7 @@ func NewCurrencyService() *CurrencyService {
 }
 
 func (service *CurrencyService) GetBTCPriceInUAH(ctx context.Context) (float64, error) {
-	baseURL := os.Getenv("BASE_CRYPTO_EXCHANGE_URL")
+	baseURL := os.Getenv("COINGECKO_BASE_URL")
 	url := baseURL + "/api/v3/simple/price?ids=bitcoin&vs_currencies=uah"
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
