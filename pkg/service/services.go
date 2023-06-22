@@ -1,17 +1,13 @@
 package service
 
 type Services struct {
-	CurrencyService   *CurrencyService
-	EmailService      *EmailService
-	FileService       *FileService
-	ValidationService *ValidationService
+	CurrencyService *CurrencyService
+	EmailService    *EmailService
 }
 
 func NewServices() *Services {
 	return &Services{
-		CurrencyService:   NewCurrencyService(),
-		EmailService:      NewEmailService(),
-		FileService:       NewFileService(),
-		ValidationService: NewValidationService(),
+		CurrencyService: NewCurrencyService(),
+		EmailService:    NewEmailService(),
 	}
 }

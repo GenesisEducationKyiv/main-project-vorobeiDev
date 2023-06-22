@@ -26,7 +26,7 @@ func NewCurrencyService() *CurrencyService {
 	}
 }
 
-func (service *CurrencyService) GetBTCPriceInUAH(ctx context.Context) (float64, error) {
+func (service *CurrencyService) GetPrice(ctx context.Context) (float64, error) {
 	baseURL := os.Getenv("COINGECKO_BASE_URL")
 	url := baseURL + "/api/v3/simple/price?ids=bitcoin&vs_currencies=uah"
 

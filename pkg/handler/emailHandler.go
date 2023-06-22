@@ -10,13 +10,13 @@ import (
 func (h *Handler) SendEmails(c *gin.Context) {
 	ctx := context.Background()
 
-	btcRate, err := h.services.CurrencyService.GetBTCPriceInUAH(ctx)
+	btcRate, err := h.services.CurrencyService.GetPrice(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching BTC rate"})
 		return
 	}
 
-	emails, err := h.services.FileService.ReadFromFile()
+	emails, err := h.services.EmailService.GetAllEmails()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error reading emails from file"})
 		return

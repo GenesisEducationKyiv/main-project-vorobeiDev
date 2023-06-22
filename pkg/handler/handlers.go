@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+
 	"github.com/vorobeiDev/crypto-client/pkg/service"
 )
 

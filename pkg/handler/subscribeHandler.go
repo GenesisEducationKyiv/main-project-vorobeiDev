@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/vorobeiDev/crypto-client/pkg/service"
+	"github.com/vorobeiDev/crypto-client/pkg/repository"
 )
 
 type EmailData struct {
@@ -21,15 +21,16 @@ func (h *Handler) Subscribe(c *gin.Context) {
 		return
 	}
 
-	if !h.services.ValidationService.ValidateEmail(emailData.Email) {
+	if !h.services.EmailService.IsEmailValid(emailData.Email) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email address"})
 		return
 	}
 
-	err := h.services.FileService.WriteToFile(emailData.Email)
+	err := h.services.EmailService.SaveEmail(emailData.Email)
 	if err != nil {
-		if errors.Is(err, service.ErrEmailExists) {
+		if errors.Is(err, repository.ErrEmailExists) {
 			c.JSON(http.StatusConflict, gin.H{"error": "Email already exists"})
+			return
 		}
 
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error writing to file"})

@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 
 	"github.com/vorobeiDev/crypto-client/pkg/handler"
 	"github.com/vorobeiDev/crypto-client/pkg/service"
@@ -21,11 +22,11 @@ func main() {
 		port = "5000"
 	}
 
-	services := service.NewServices()
-	handler := handler.NewHandler(services)
+	newServices := service.NewServices()
+	newHandler := handler.NewHandler(newServices)
 
 	r := gin.Default()
-	handler.RegisterRoutes(r)
+	newHandler.RegisterRoutes(r)
 
 	err = r.Run(":" + port)
 	if err != nil {
