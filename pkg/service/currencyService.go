@@ -3,39 +3,30 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 )
 
-type CurrencyService struct {
-	httpClient *http.Client
-}
+type CurrencyService struct{}
 
-type UAHCoin struct {
-	UAH float64 `json:"uah"`
-}
-
-type CoinGeckoResponse struct {
-	Bitcoin UAHCoin `json:"bitcoin"`
-}
+type CurrencyResponse map[string]map[string]float64
 
 func NewCurrencyService() *CurrencyService {
-	return &CurrencyService{
-		httpClient: &http.Client{},
-	}
+	return &CurrencyService{}
 }
 
-func (service *CurrencyService) GetPrice(ctx context.Context) (float64, error) {
+func (service *CurrencyService) GetPrice(ctx context.Context, from string, to string) (float64, error) {
 	baseURL := os.Getenv("COINGECKO_BASE_URL")
-	url := baseURL + "/api/v3/simple/price?ids=bitcoin&vs_currencies=uah"
+	url := fmt.Sprintf("%s/api/v3/simple/price?ids=%s&vs_currencies=%s", baseURL, from, to)
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return 0, err
 	}
 
-	response, err := service.httpClient.Do(request)
+	response, err := http.DefaultClient.Do(request)
 	if err != nil {
 		return 0, err
 	}
@@ -47,10 +38,20 @@ func (service *CurrencyService) GetPrice(ctx context.Context) (float64, error) {
 		return 0, err
 	}
 
-	var data CoinGeckoResponse
+	var data CurrencyResponse
 	if err = json.Unmarshal(body, &data); err != nil {
 		return 0, err
 	}
 
-	return data.Bitcoin.UAH, nil
+	currencyData, ok := data[from]
+	if !ok {
+		return 0, fmt.Errorf("currency not found: %s", from)
+	}
+
+	coinPrice, ok := currencyData[to]
+	if !ok {
+		return 0, fmt.Errorf("currency not found: %s", to)
+	}
+
+	return coinPrice, nil
 }
