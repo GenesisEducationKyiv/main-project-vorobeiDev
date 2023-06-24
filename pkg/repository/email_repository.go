@@ -22,7 +22,7 @@ func NewEmailRepository() *EmailRepository {
 var ErrEmailExists = errors.New("email already exists")
 
 func (r *EmailRepository) Save(email string) error {
-	if !r.isFileExists() {
+	if !r.IsFileExists() {
 		_, err := os.Create(r.fileName)
 		if err != nil {
 			return err
@@ -50,7 +50,7 @@ func (r *EmailRepository) Save(email string) error {
 	return err
 }
 
-func (r *EmailRepository) isFileExists() bool {
+func (r *EmailRepository) IsFileExists() bool {
 	_, err := os.Stat(r.fileName)
 	return !os.IsNotExist(err)
 }
