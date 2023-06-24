@@ -8,7 +8,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/vorobeiDev/crypto-client/pkg/handler"
-	"github.com/vorobeiDev/crypto-client/pkg/service"
+	"github.com/vorobeiDev/crypto-client/pkg/services"
 )
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 		port = "5000"
 	}
 
-	newServices := service.NewServices()
+	newServices := services.NewServices()
 	newHandler := handler.NewHandler(newServices)
 
 	r := gin.Default()

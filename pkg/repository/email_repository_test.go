@@ -1,9 +1,10 @@
 package repository_test
 
 import (
-	"github.com/vorobeiDev/crypto-client/pkg/repository"
 	"os"
 	"testing"
+
+	"github.com/vorobeiDev/crypto-client/pkg/repository"
 )
 
 func TestSave(t *testing.T) {
