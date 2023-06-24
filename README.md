@@ -24,17 +24,19 @@
 - **pkg**: Directory that contains packages with specific functionalities.
   - **handler**: Contains handler packages responsible for handling HTTP requests.
     - **handlers.go**: General handler. And route registration method.
-    - **emailHandler.go**: Handles sending emails to a list of email addresses.
-    - **rateHandler.go**: Handles retrieving the Bitcoin exchange rate in UAH.
-    - **subscribeHandler.go**: Handles subscribing email addresses and writing them to a file.
+    - **email_handler.go**: Handles sending emails to a list of email addresses.
+    - **rate_handler.go**: Handles retrieving the Bitcoin exchange rate in UAH.
+    - **subscribe_handler.go**: Handles subscribing email addresses and writing them to a file.
+    - **subscribe_handler_integration_test.go**: Integration test for handles subscribing email addresses and writing them to a file.
 
   - **service**: Contains service packages responsible for providing various functionalities.
-    - **currencyService.go**: Implements functionality related to fetching the Bitcoin exchange rate in UAH (Ukrainian Hryvnia) using CoinGecko API.
-    - **emailService.go**: Implements functionality for sending emails using SMTP.
+    - **currency_service.go**: Implements functionality related to fetching the Bitcoin exchange rate in UAH (Ukrainian Hryvnia) using CoinGecko API.
+    - **email_service.go**: Implements functionality for sending emails using SMTP.
     - **services**: General file for methods implementing.
     
   - **repository**
-    - **emailRepository.go**: Implements file-related operations such as writing and reading email addresses to/from a file. Implements email address validation.
+    - **email_repository.go**: Implements file-related operations such as writing and reading email addresses to/from a file. Implements email address validation.
+    - **email_repository_test.go**: Unit test for implements file-related operations such as writing and reading email addresses to/from a file. Implements email address validation.
 
 
 ## Running the Project
