@@ -1,15 +1,18 @@
 package repository_test
 
 import (
-	"os"
+	"github.com/joho/godotenv"
+	"log"
 	"testing"
 
 	"github.com/vorobeiDev/crypto-client/pkg/repository"
 )
 
-func TestSave(t *testing.T) {
-	tmpFileName := "./test_emails.txt"
-	t.Setenv("DB_FILE_NAME", tmpFileName)
+func TestCreateFile(t *testing.T) {
+	envErr := godotenv.Load("../../.env.test")
+	if envErr != nil {
+		log.Fatal("Error loading .env file.", envErr)
+	}
 
 	emailRepo := repository.NewEmailRepository()
 
@@ -17,37 +20,37 @@ func TestSave(t *testing.T) {
 		t.Fatalf("The file was expected not to exist but was found to exist")
 	}
 
-	err := emailRepo.Save("test@example.com")
-
-	if err != nil {
-		t.Fatalf("An error was received while saving the email address: %v", err)
+	saveErr := emailRepo.Save("test@example.com")
+	if saveErr != nil {
+		t.Fatalf("An error was received while saving the email address: %v", saveErr)
 	}
 
 	if !emailRepo.IsFileExists() {
 		t.Fatalf("The file was expected to exist but found to be missing")
 	}
 
-	os.Remove(tmpFileName)
+	defer func() {
+		if removeErr := emailRepo.RemoveFile(); removeErr != nil {
+			t.Fatalf(removeErr.Error())
+		}
+	}()
 }
 
 func TestGetAllEmails(t *testing.T) {
-	tmpFileName := "./test_emails.txt"
-	t.Setenv("DB_FILE_NAME", tmpFileName)
-
-	file, err := os.Create(tmpFileName)
-
+	err := godotenv.Load("../../.env.test")
 	if err != nil {
-		t.Fatalf("Failed to create temporary file: %v", err)
+		log.Fatal("Error loading .env file.", err)
 	}
 
-	defer file.Close()
-
-	_, err = file.WriteString("test1@example.com\ntest2@example.com\ntest3@example.com")
-	if err != nil {
-		t.Fatalf("Failed to write to temporary file: %v", err)
-	}
+	expectedEmails := []string{"test1@example.com", "test2@example.com", "test3@example.com"}
 
 	emailRepo := repository.NewEmailRepository()
+
+	for _, email := range expectedEmails {
+		if saveErr := emailRepo.Save(email); saveErr != nil {
+			t.Fatalf("An error with email saving!")
+		}
+	}
 
 	emails, err := emailRepo.GetAllEmails()
 	if err != nil {
@@ -63,7 +66,6 @@ func TestGetAllEmails(t *testing.T) {
 		)
 	}
 
-	expectedEmails := []string{"test1@example.com", "test2@example.com", "test3@example.com"}
 	for i, email := range emails {
 		if email != expectedEmails[i] {
 			t.Errorf("Invalid email address received. Expected: %s, Received: %s", expectedEmails[i], email)
@@ -71,16 +73,8 @@ func TestGetAllEmails(t *testing.T) {
 	}
 
 	defer func() {
-		file.Close()
-
-		errSync := file.Sync()
-		if errSync != nil {
-			t.Errorf("Failed to sync file: %v", errSync)
-		}
-
-		errRemove := os.Remove(tmpFileName)
-		if errRemove != nil {
-			t.Errorf("Error deleting temporary file: %v", errRemove)
+		if removeErr := emailRepo.RemoveFile(); removeErr != nil {
+			t.Fatalf(removeErr.Error())
 		}
 	}()
 }

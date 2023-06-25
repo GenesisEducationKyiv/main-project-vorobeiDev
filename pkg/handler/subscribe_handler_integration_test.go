@@ -50,13 +50,11 @@ func TestSubscribeIntegration(t *testing.T) {
 	router.ServeHTTP(recorder, req)
 
 	if recorder.Code != http.StatusOK {
-		t.Errorf("Expected status %d, got %d", http.StatusOK, recorder.Code)
-		t.FailNow()
+		t.Fatalf("Expected status %d, got %d", http.StatusOK, recorder.Code)
 	}
 
 	expectedResponse := "Email has been successfully subscribed"
 	if recorder.Body.String() != expectedResponse {
-		t.Errorf("Expected response %s, got %s", expectedResponse, recorder.Body.String())
-		t.FailNow()
+		t.Fatalf("Expected response %s, got %s", expectedResponse, recorder.Body.String())
 	}
 }
