@@ -6,6 +6,9 @@ import (
 	"github.com/vorobeiDev/crypto-client/pkg/service"
 )
 
+const BTC = "bitcoin"
+const UAH = "uah"
+
 type Handler struct {
 	services *service.Services
 }
@@ -19,8 +22,3 @@ func (h *Handler) RegisterRoutes(r *gin.Engine) {
 	r.POST("/subscribe", h.Subscribe)
 	r.POST("/sendEmails", h.SendEmails)
 }
-
-const (
-	CurrencyBitcoin = "bitcoin"
-	CurrencyUAH     = "uah"
-)

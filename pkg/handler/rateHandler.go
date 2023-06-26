@@ -8,7 +8,7 @@ import (
 
 func (h *Handler) GetRate(c *gin.Context) {
 	ctx := c.Request.Context()
-	price, err := h.services.CurrencyService.GetPrice(ctx, CurrencyBitcoin, CurrencyUAH)
+	price, err := h.services.CurrencyService.GetPrice(ctx, BTC, UAH)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid status value"})

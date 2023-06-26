@@ -9,7 +9,7 @@ import (
 func (h *Handler) SendEmails(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	btcRate, err := h.services.CurrencyService.GetPrice(ctx, CurrencyBitcoin, CurrencyUAH)
+	btcRate, err := h.services.CurrencyService.GetPrice(ctx, BTC, UAH)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching BTC rate"})
 		return

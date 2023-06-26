@@ -3,8 +3,6 @@ package main
 import (
 	"github.com/vorobeiDev/crypto-client/pkg/repository"
 	"log"
-	"net/http"
-	"net/smtp"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -21,20 +19,14 @@ func main() {
 	}
 
 	port := os.Getenv("HTTP_PORT")
-	url := os.Getenv("COINGECKO_BASE_URL")
-	emailFrom := os.Getenv("EMAIL_FROM")
-
 	if port == "" {
 		port = "5000"
 	}
 
-	httpClient := http.DefaultClient
-	auth := smtp.PlainAuth("", "user@example.com", "password", "smtp.example.com")
-
 	emailRepository := repository.NewEmailRepository()
 
-	currencyService := service.NewCurrencyService(url, httpClient)
-	emailService := service.NewEmailService(auth, emailFrom, emailRepository)
+	currencyService := service.NewCurrencyService()
+	emailService := service.NewEmailService(emailRepository)
 
 	services := service.NewServices(currencyService, emailService)
 	handlers := handler.NewHandlers(services)

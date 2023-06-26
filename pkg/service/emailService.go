@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/vorobeiDev/crypto-client/pkg/repository"
 	"net/smtp"
+	"os"
 )
 
 type EmailService struct {
@@ -12,11 +13,10 @@ type EmailService struct {
 	emailRepository *repository.EmailRepository
 }
 
-func NewEmailService(
-	auth smtp.Auth,
-	emailFrom string,
-	emailRepository *repository.EmailRepository,
-) *EmailService {
+func NewEmailService(emailRepository *repository.EmailRepository) *EmailService {
+	emailFrom := os.Getenv("EMAIL_FROM")
+	auth := smtp.PlainAuth("", "user@example.com", "password", "smtp.example.com")
+
 	return &EmailService{
 		auth:            auth,
 		emailFrom:       emailFrom,
