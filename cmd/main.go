@@ -8,7 +8,8 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/vorobeiDev/crypto-client/pkg/handler"
-	"github.com/vorobeiDev/crypto-client/pkg/services"
+	"github.com/vorobeiDev/crypto-client/pkg/repository"
+	"github.com/vorobeiDev/crypto-client/pkg/service"
 )
 
 func main() {
@@ -22,11 +23,16 @@ func main() {
 		port = "5000"
 	}
 
-	newServices := services.NewServices()
-	newHandler := handler.NewHandler(newServices)
+	emailRepository := repository.NewEmailRepository()
+
+	currencyService := service.NewCurrencyService()
+	emailService := service.NewEmailService(emailRepository)
+
+	services := service.NewServices(currencyService, emailService)
+	handlers := handler.NewHandlers(services)
 
 	r := gin.Default()
-	newHandler.RegisterRoutes(r)
+	handlers.RegisterRoutes(r)
 
 	err = r.Run(":" + port)
 	if err != nil {

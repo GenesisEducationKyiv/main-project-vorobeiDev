@@ -52,7 +52,7 @@ func TestGetAllEmails(t *testing.T) {
 		}
 	}
 
-	emails, err := emailRepo.GetAllEmails()
+	emails, err := emailRepo.AllEmails()
 	if err != nil {
 		t.Fatalf("An error was received while retrieving the list of email addresses: %v", err)
 	}

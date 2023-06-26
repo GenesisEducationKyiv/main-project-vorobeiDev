@@ -1,4 +1,4 @@
-package services
+package service
 
 import (
 	"context"
@@ -9,24 +9,31 @@ import (
 	"os"
 )
 
-type CurrencyService struct{}
+type CurrencyService struct {
+	baseURL    string
+	httpClient *http.Client
+}
 
 type CurrencyResponse map[string]map[string]float64
 
 func NewCurrencyService() *CurrencyService {
-	return &CurrencyService{}
+	url := os.Getenv("COINGECKO_BASE_URL")
+
+	return &CurrencyService{
+		baseURL:    url,
+		httpClient: http.DefaultClient,
+	}
 }
 
-func (service *CurrencyService) GetPrice(ctx context.Context, from string, to string) (float64, error) {
-	baseURL := os.Getenv("COINGECKO_BASE_URL")
-	url := fmt.Sprintf("%s/api/v3/simple/price?ids=%s&vs_currencies=%s", baseURL, from, to)
+func (s *CurrencyService) GetPrice(ctx context.Context, from string, to string) (float64, error) {
+	url := fmt.Sprintf("%s/api/v3/simple/price?ids=%s&vs_currencies=%s", s.baseURL, from, to)
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return 0, err
 	}
 
-	response, err := http.DefaultClient.Do(request)
+	response, err := s.httpClient.Do(request)
 	if err != nil {
 		return 0, err
 	}

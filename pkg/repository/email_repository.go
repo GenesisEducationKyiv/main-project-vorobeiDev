@@ -13,10 +13,10 @@ type EmailRepository struct {
 }
 
 func NewEmailRepository() *EmailRepository {
-	fileName := os.Getenv("DB_FILE_NAME")
+	filePath := os.Getenv("DB_FILE_NAME")
 
 	return &EmailRepository{
-		filePath: fileName,
+		filePath: filePath,
 	}
 }
 
@@ -27,13 +27,13 @@ func (r *EmailRepository) Save(email string) error {
 		return err
 	}
 
-	emails, err := r.GetAllEmails()
+	emails, err := r.AllEmails()
 	if err != nil {
 		return err
 	}
 
 	if r.IsEmailExists(email, emails) {
-		return ErrEmailExists
+		return fmt.Errorf("%w: %s", ErrEmailExists, email)
 	}
 
 	file, err := os.OpenFile(r.filePath, os.O_APPEND|os.O_WRONLY, 0644)
@@ -53,7 +53,7 @@ func (r *EmailRepository) IsFileExists() bool {
 	return !os.IsNotExist(err)
 }
 
-func (r *EmailRepository) GetAllEmails() ([]string, error) {
+func (r *EmailRepository) AllEmails() ([]string, error) {
 	fileData, err := os.ReadFile(r.filePath)
 	if err != nil {
 		return nil, err

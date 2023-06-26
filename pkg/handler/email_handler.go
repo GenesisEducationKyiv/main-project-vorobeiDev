@@ -1,16 +1,15 @@
 package handler
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func (h *Handler) SendEmails(c *gin.Context) {
-	ctx := context.Background()
+	ctx := c.Request.Context()
 
-	btcRate, err := h.services.CurrencyService.GetPrice(ctx, "bitcoin", "uah")
+	btcRate, err := h.services.CurrencyService.GetPrice(ctx, BTC, UAH)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching BTC rate"})
 		return

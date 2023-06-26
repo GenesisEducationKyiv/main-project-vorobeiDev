@@ -1,11 +1,10 @@
-package services
+package service
 
 import (
 	"fmt"
+	"github.com/vorobeiDev/crypto-client/pkg/repository"
 	"net/smtp"
 	"os"
-
-	"github.com/vorobeiDev/crypto-client/pkg/repository"
 )
 
 type EmailService struct {
@@ -14,10 +13,9 @@ type EmailService struct {
 	emailRepository *repository.EmailRepository
 }
 
-func NewEmailService() *EmailService {
-	auth := smtp.PlainAuth("", "user@example.com", "password", "smtp.example.com")
+func NewEmailService(emailRepository *repository.EmailRepository) *EmailService {
 	emailFrom := os.Getenv("EMAIL_FROM")
-	emailRepository := repository.NewEmailRepository()
+	auth := smtp.PlainAuth("", "user@example.com", "password", "smtp.example.com")
 
 	return &EmailService{
 		auth:            auth,
@@ -31,7 +29,7 @@ func (s *EmailService) SaveEmail(email string) error {
 }
 
 func (s *EmailService) GetAllEmails() ([]string, error) {
-	return s.emailRepository.GetAllEmails()
+	return s.emailRepository.AllEmails()
 }
 
 func (s *EmailService) IsEmailValid(email string) bool {

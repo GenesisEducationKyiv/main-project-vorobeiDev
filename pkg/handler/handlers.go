@@ -3,14 +3,17 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/vorobeiDev/crypto-client/pkg/services"
+	"github.com/vorobeiDev/crypto-client/pkg/service"
 )
 
+const BTC = "bitcoin"
+const UAH = "uah"
+
 type Handler struct {
-	services *services.Services
+	services *service.Services
 }
 
-func NewHandler(s *services.Services) *Handler {
+func NewHandlers(s *service.Services) *Handler {
 	return &Handler{services: s}
 }
 
