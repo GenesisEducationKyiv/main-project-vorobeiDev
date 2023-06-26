@@ -10,7 +10,7 @@ type Handler struct {
 	services *service.Services
 }
 
-func NewHandler(s *service.Services) *Handler {
+func NewHandlers(s *service.Services) *Handler {
 	return &Handler{services: s}
 }
 
@@ -19,3 +19,8 @@ func (h *Handler) RegisterRoutes(r *gin.Engine) {
 	r.POST("/subscribe", h.Subscribe)
 	r.POST("/sendEmails", h.SendEmails)
 }
+
+const (
+	CurrencyBitcoin = "bitcoin"
+	CurrencyUAH     = "uah"
+)

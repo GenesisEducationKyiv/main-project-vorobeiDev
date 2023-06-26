@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"net/mail"
 	"os"
 	"strings"
@@ -29,13 +30,13 @@ func (r *EmailRepository) Save(email string) error {
 		}
 	}
 
-	emails, err := r.GetAllEmails()
+	emails, err := r.AllEmails()
 	if err != nil {
 		return err
 	}
 
 	if r.IsEmailExists(email, emails) {
-		return ErrEmailExists
+		return fmt.Errorf("%w: %s", ErrEmailExists, email)
 	}
 
 	file, err := os.OpenFile(r.fileName, os.O_APPEND|os.O_WRONLY, 0644)
@@ -55,7 +56,7 @@ func (r *EmailRepository) isFileExists() bool {
 	return !os.IsNotExist(err)
 }
 
-func (r *EmailRepository) GetAllEmails() ([]string, error) {
+func (r *EmailRepository) AllEmails() ([]string, error) {
 	fileData, err := os.ReadFile(r.fileName)
 	if err != nil {
 		return nil, err

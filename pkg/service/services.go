@@ -5,9 +5,9 @@ type Services struct {
 	EmailService    *EmailService
 }
 
-func NewServices() *Services {
+func NewServices(currencyService *CurrencyService, emailService *EmailService) *Services {
 	return &Services{
-		CurrencyService: NewCurrencyService(),
-		EmailService:    NewEmailService(),
+		CurrencyService: currencyService,
+		EmailService:    emailService,
 	}
 }
