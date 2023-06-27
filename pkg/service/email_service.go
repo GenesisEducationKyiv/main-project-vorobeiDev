@@ -7,13 +7,20 @@ import (
 	"os"
 )
 
+type IEmailService interface {
+	SaveEmail(email string) error
+	GetAllEmails() ([]string, error)
+	IsEmailValid(email string) bool
+	SendEmail(toEmail string, btcRate float64) error
+}
+
 type EmailService struct {
 	auth            smtp.Auth
 	emailFrom       string
-	emailRepository *repository.EmailRepository
+	emailRepository repository.IEmailRepository
 }
 
-func NewEmailService(emailRepository *repository.EmailRepository) *EmailService {
+func NewEmailService(emailRepository repository.IEmailRepository) IEmailService {
 	emailFrom := os.Getenv("EMAIL_FROM")
 	auth := smtp.PlainAuth("", "user@example.com", "password", "smtp.example.com")
 
