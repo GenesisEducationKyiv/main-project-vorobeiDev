@@ -11,7 +11,8 @@ import (
 	"github.com/vorobeiDev/crypto-client/pkg/repository"
 )
 
-const DefaultTestEmail = "test@example.com"
+const defaultTestEmail = "test@example.com"
+const invalidTestEmail = "testemailexamplecom"
 
 func TestMain(m *testing.M) {
 	if envErr := godotenv.Load("../../.env.test"); envErr != nil {
@@ -27,45 +28,35 @@ func TestMain(m *testing.M) {
 func TestEmailRepository_Save(t *testing.T) {
 	r := repository.NewEmailRepository()
 
-	if err := r.Save(DefaultTestEmail); err != nil {
-		t.Fatalf("expected nil error, got %v", err)
+	if err := r.Save(defaultTestEmail); err != nil {
+		t.Fatalf("Expected nil error, got %v", err)
 	}
 
-	err := r.Save(DefaultTestEmail)
+	err := r.Save(defaultTestEmail)
 	if err == nil || !errors.Is(err, repository.ErrEmailExists) {
-		t.Fatalf("expected '%v' error, got %v", repository.ErrEmailExists, err)
+		t.Fatalf("Expected '%v' error, got %v", repository.ErrEmailExists, err)
 	}
 
-	err = r.Save("testemailexamplecom")
+	err = r.Save(invalidTestEmail)
 	if err == nil || !errors.Is(err, repository.ErrInvalidEmail) {
-		t.Fatalf("expected '%v' error, got %v", repository.ErrInvalidEmail, err)
+		t.Fatalf("Expected '%v' error, got %v", repository.ErrInvalidEmail, err)
 	}
 }
 
 func TestEmailRepository_AllEmails(t *testing.T) {
 	r := repository.NewEmailRepository()
 
-	err := r.Save(DefaultTestEmail)
+	err := r.Save(defaultTestEmail)
 	if err == nil || !errors.Is(err, repository.ErrEmailExists) {
-		t.Fatalf("expected '%v' error, got %v", repository.ErrEmailExists, err)
+		t.Fatalf("Expected '%v' error, got %v", repository.ErrEmailExists, err)
 	}
 
 	emails, err := r.AllEmails()
 	if err != nil {
-		t.Fatalf("expected nil error, got %v", err)
+		t.Fatalf("Expected nil error, got %v", err)
 	}
 
-	if !contains(emails, DefaultTestEmail) {
-		t.Fatalf("expected all emails includes, %v, but thay not. All emails: %v", DefaultTestEmail, emails)
+	if len(emails) != 1 || emails[0] != defaultTestEmail {
+		t.Errorf("Expected single email '%s', but got '%s'", defaultTestEmail, emails[0])
 	}
-}
-
-func contains(s []string, searchString string) bool {
-	for _, v := range s {
-		if v == searchString {
-			return true
-		}
-	}
-
-	return false
 }
