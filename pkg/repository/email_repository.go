@@ -21,10 +21,18 @@ func NewEmailRepository() *EmailRepository {
 }
 
 var ErrEmailExists = errors.New("email already exists")
+var ErrInvalidEmail = errors.New("invalid email address")
 
 func (r *EmailRepository) Save(email string) error {
-	if err := r.CreateFileIfNotExist(); err != nil {
+	file, err := os.OpenFile(r.filePath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
 		return err
+	}
+
+	defer file.Close()
+
+	if !r.validateEmail(email) {
+		return fmt.Errorf("%w: %s", ErrInvalidEmail, email)
 	}
 
 	emails, err := r.AllEmails()
@@ -32,25 +40,13 @@ func (r *EmailRepository) Save(email string) error {
 		return err
 	}
 
-	if r.IsEmailExists(email, emails) {
+	if r.isEmailExists(email, emails) {
 		return fmt.Errorf("%w: %s", ErrEmailExists, email)
 	}
-
-	file, err := os.OpenFile(r.filePath, os.O_APPEND|os.O_WRONLY, 0644)
-	if err != nil {
-		return err
-	}
-
-	defer file.Close()
 
 	_, err = fmt.Fprintln(file, email)
 
 	return err
-}
-
-func (r *EmailRepository) IsFileExists() bool {
-	_, err := os.Stat(r.filePath)
-	return !os.IsNotExist(err)
 }
 
 func (r *EmailRepository) AllEmails() ([]string, error) {
@@ -74,19 +70,7 @@ func (r *EmailRepository) AllEmails() ([]string, error) {
 	return trimmedEmails, nil
 }
 
-func (r *EmailRepository) CreateFileIfNotExist() error {
-	isFileExists := r.IsFileExists()
-	if !isFileExists {
-		_, createErr := os.Create(r.filePath)
-		if createErr != nil {
-			return createErr
-		}
-	}
-
-	return nil
-}
-
-func (r *EmailRepository) IsEmailExists(email string, emails []string) bool {
+func (r *EmailRepository) isEmailExists(email string, emails []string) bool {
 	for _, s := range emails {
 		if strings.Contains(s, email) {
 			return true
@@ -96,16 +80,7 @@ func (r *EmailRepository) IsEmailExists(email string, emails []string) bool {
 	return false
 }
 
-func (r *EmailRepository) ValidateEmail(email string) bool {
+func (r *EmailRepository) validateEmail(email string) bool {
 	_, err := mail.ParseAddress(email)
 	return err == nil
-}
-
-func (r *EmailRepository) RemoveFile() error {
-	err := os.Remove(r.filePath)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }

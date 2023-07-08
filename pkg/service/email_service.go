@@ -32,10 +32,6 @@ func (s *EmailService) GetAllEmails() ([]string, error) {
 	return s.emailRepository.AllEmails()
 }
 
-func (s *EmailService) IsEmailValid(email string) bool {
-	return s.emailRepository.ValidateEmail(email)
-}
-
 func (s *EmailService) SendEmail(toEmail string, btcRate float64) error {
 	msg := fmt.Sprintf(
 		"From: %s\nTo: %s\nSubject: BTC Rate\n\nCurrent BTC rate is %f UAH",

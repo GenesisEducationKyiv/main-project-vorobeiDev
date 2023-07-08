@@ -1,80 +1,71 @@
 package repository_test
 
 import (
-	"github.com/joho/godotenv"
+	"errors"
 	"log"
+	"os"
 	"testing"
+
+	"github.com/joho/godotenv"
 
 	"github.com/vorobeiDev/crypto-client/pkg/repository"
 )
 
-func TestCreateFile(t *testing.T) {
-	envErr := godotenv.Load("../../.env.test")
-	if envErr != nil {
+const DefaultTestEmail = "test@example.com"
+
+func TestMain(m *testing.M) {
+	if envErr := godotenv.Load("../../.env.test"); envErr != nil {
 		log.Fatal("Error loading .env file.", envErr)
 	}
 
-	emailRepo := repository.NewEmailRepository()
+	exitCode := m.Run()
 
-	if emailRepo.IsFileExists() {
-		t.Fatalf("The file was expected not to exist but was found to exist")
-	}
-
-	saveErr := emailRepo.Save("test@example.com")
-	if saveErr != nil {
-		t.Fatalf("An error was received while saving the email address: %v", saveErr)
-	}
-
-	if !emailRepo.IsFileExists() {
-		t.Fatalf("The file was expected to exist but found to be missing")
-	}
-
-	defer func() {
-		if removeErr := emailRepo.RemoveFile(); removeErr != nil {
-			t.Fatalf(removeErr.Error())
-		}
-	}()
+	os.Remove(os.Getenv("DB_FILE_NAME"))
+	os.Exit(exitCode)
 }
 
-func TestGetAllEmails(t *testing.T) {
-	err := godotenv.Load("../../.env.test")
+func TestEmailRepository_Save(t *testing.T) {
+	r := repository.NewEmailRepository()
+
+	if err := r.Save(DefaultTestEmail); err != nil {
+		t.Fatalf("expected nil error, got %v", err)
+	}
+
+	err := r.Save(DefaultTestEmail)
+	if err == nil || !errors.Is(err, repository.ErrEmailExists) {
+		t.Fatalf("expected '%v' error, got %v", repository.ErrEmailExists, err)
+	}
+
+	err = r.Save("testemailexamplecom")
+	if err == nil || !errors.Is(err, repository.ErrInvalidEmail) {
+		t.Fatalf("expected '%v' error, got %v", repository.ErrInvalidEmail, err)
+	}
+}
+
+func TestEmailRepository_AllEmails(t *testing.T) {
+	r := repository.NewEmailRepository()
+
+	err := r.Save(DefaultTestEmail)
+	if err == nil || !errors.Is(err, repository.ErrEmailExists) {
+		t.Fatalf("expected '%v' error, got %v", repository.ErrEmailExists, err)
+	}
+
+	emails, err := r.AllEmails()
 	if err != nil {
-		log.Fatal("Error loading .env file.", err)
+		t.Fatalf("expected nil error, got %v", err)
 	}
 
-	expectedEmails := []string{"test1@example.com", "test2@example.com", "test3@example.com"}
+	if !contains(emails, DefaultTestEmail) {
+		t.Fatalf("expected all emails includes, %v, but thay not. All emails: %v", DefaultTestEmail, emails)
+	}
+}
 
-	emailRepo := repository.NewEmailRepository()
-
-	for _, email := range expectedEmails {
-		if saveErr := emailRepo.Save(email); saveErr != nil {
-			t.Fatalf("An error with email saving!")
+func contains(s []string, searchString string) bool {
+	for _, v := range s {
+		if v == searchString {
+			return true
 		}
 	}
 
-	emails, err := emailRepo.AllEmails()
-	if err != nil {
-		t.Fatalf("An error was received while retrieving the list of email addresses: %v", err)
-	}
-
-	expectedCount := 3
-	if len(emails) != expectedCount {
-		t.Errorf(
-			"Incorrect number of email addresses received. Expected: %d, Received: %d",
-			expectedCount,
-			len(emails),
-		)
-	}
-
-	for i, email := range emails {
-		if email != expectedEmails[i] {
-			t.Errorf("Invalid email address received. Expected: %s, Received: %s", expectedEmails[i], email)
-		}
-	}
-
-	defer func() {
-		if removeErr := emailRepo.RemoveFile(); removeErr != nil {
-			t.Fatalf(removeErr.Error())
-		}
-	}()
+	return false
 }
