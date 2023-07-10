@@ -7,14 +7,18 @@
     │   └──main.go
     └── pkg
         ├── service
-        │   ├── currencyService.go
-        │   ├── emailService.go
-        │   ├── fileService.go
-        │   └── validationService.go
+        │   ├── currency_service.go
+        │   ├── email_service.go
+        │   └── services.go
+        ├── repository
+        │   ├── email_repository.go
+        │   └── email_repository_test.go
         └── handler
-            ├── emailHandler.go
-            ├── rateHandler.go
-            └── subscribeHandler.go
+            ├── email_handler.go
+            ├── handlers.go
+            ├── rate_handler.go
+            ├── subscribe_handler.go
+            └── subscribe_handler_integration_test.go
 
 
 - **dockerfile**: Contains the Dockerfile used to build the project's Docker image.
