@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/vorobeiDev/crypto-client/pkg/repository"
 	"log"
 	"os"
 
@@ -9,6 +8,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/vorobeiDev/crypto-client/pkg/handler"
+	"github.com/vorobeiDev/crypto-client/pkg/repository"
 	"github.com/vorobeiDev/crypto-client/pkg/service"
 )
 
