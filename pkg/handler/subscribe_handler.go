@@ -21,7 +21,7 @@ func (h *Handler) Subscribe(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.EmailService.SaveEmail(emailData.Email); err != nil {
+	if err := h.repositories.EmailRepository.Save(emailData.Email); err != nil {
 		if errors.Is(err, repository.ErrEmailExists) {
 			c.JSON(http.StatusConflict, gin.H{"error": "Email already exists"})
 			return

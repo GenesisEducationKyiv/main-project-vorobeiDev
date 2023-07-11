@@ -6,12 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 )
-
-type ICurrencyService interface {
-	GetPrice(ctx context.Context, from string, to string) (float64, error)
-}
 
 type CurrencyService struct {
 	baseURL    string
@@ -20,9 +15,7 @@ type CurrencyService struct {
 
 type CurrencyResponse map[string]map[string]float64
 
-func NewCurrencyService() ICurrencyService {
-	url := os.Getenv("COINGECKO_BASE_URL")
-
+func NewCurrencyService(url string) *CurrencyService {
 	return &CurrencyService{
 		baseURL:    url,
 		httpClient: http.DefaultClient,

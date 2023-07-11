@@ -23,13 +23,17 @@ func main() {
 		port = "5000"
 	}
 
+	currencyURL := os.Getenv("COINGECKO_BASE_URL")
+	emailFrom := os.Getenv("EMAIL_FROM")
+
+	currencyService := service.NewCurrencyService(currencyURL)
+	emailSenderService := service.NewEmailSenderService(emailFrom)
+	services := service.NewServices(currencyService, emailSenderService)
+
 	emailRepository := repository.NewEmailRepository()
+	repositories := repository.NewRepositories(emailRepository)
 
-	currencyService := service.NewCurrencyService()
-	emailService := service.NewEmailService(emailRepository)
-
-	services := service.NewServices(currencyService, emailService)
-	handlers := handler.NewHandlers(services)
+	handlers := handler.NewHandlers(services, repositories)
 
 	r := gin.Default()
 	handlers.RegisterRoutes(r)

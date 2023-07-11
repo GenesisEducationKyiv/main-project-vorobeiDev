@@ -8,21 +8,11 @@ import (
 	"strings"
 )
 
-type IEmailRepository interface {
-	Save(email string) error
-	AllEmails() ([]string, error)
-	IsFileExists() bool
-	CreateFileIfNotExist() error
-	IsEmailExists(email string, emails []string) bool
-	ValidateEmail(email string) bool
-	RemoveFile() error
-}
-
 type EmailRepository struct {
 	filePath string
 }
 
-func NewEmailRepository() IEmailRepository {
+func NewEmailRepository() *EmailRepository {
 	filePath := os.Getenv("DB_FILE_NAME")
 
 	return &EmailRepository{
