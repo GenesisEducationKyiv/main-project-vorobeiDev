@@ -13,8 +13,10 @@ type Handler struct {
 	services *service.Services
 }
 
-func NewHandlers(s *service.Services) *Handler {
-	return &Handler{services: s}
+func NewHandlers(services *service.Services) *Handler {
+	return &Handler{
+		services: services,
+	}
 }
 
 func (h *Handler) RegisterRoutes(r *gin.Engine) {

@@ -15,14 +15,14 @@ func (h *Handler) SendEmails(c *gin.Context) {
 		return
 	}
 
-	emails, err := h.services.EmailService.GetAllEmails()
+	emails, err := h.services.EmailService.AllEmails()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error reading emails from file"})
 		return
 	}
 
 	for _, email := range emails {
-		err = h.services.EmailService.SendEmail(email, btcRate)
+		err = h.services.EmailSenderService.Send(email, btcRate)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error sending email"})
 			return

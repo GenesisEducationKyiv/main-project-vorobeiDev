@@ -1,13 +1,34 @@
 package service
 
-type Services struct {
-	CurrencyService *CurrencyService
-	EmailService    *EmailService
+import "golang.org/x/net/context"
+
+type ICurrencyService interface {
+	GetPrice(ctx context.Context, from string, to string) (float64, error)
 }
 
-func NewServices(currencyService *CurrencyService, emailService *EmailService) *Services {
+type IEmailSenderService interface {
+	Send(toEmail string, btcRate float64) error
+}
+
+type IFileService interface {
+	Save(email string) error
+	AllEmails() ([]string, error)
+}
+
+type Services struct {
+	CurrencyService    ICurrencyService
+	EmailSenderService IEmailSenderService
+	EmailService       IFileService
+}
+
+func NewServices(
+	currencyService ICurrencyService,
+	emailService IEmailSenderService,
+	fileService IFileService,
+) *Services {
 	return &Services{
-		CurrencyService: currencyService,
-		EmailService:    emailService,
+		CurrencyService:    currencyService,
+		EmailSenderService: emailService,
+		EmailService:       fileService,
 	}
 }

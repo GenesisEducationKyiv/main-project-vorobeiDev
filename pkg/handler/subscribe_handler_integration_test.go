@@ -3,6 +3,7 @@ package handler_test
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/vorobeiDev/crypto-client/pkg/repository"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -13,7 +14,6 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/vorobeiDev/crypto-client/pkg/handler"
-	"github.com/vorobeiDev/crypto-client/pkg/repository"
 	"github.com/vorobeiDev/crypto-client/pkg/service"
 )
 
@@ -34,10 +34,15 @@ func TestSubscribeIntegration(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 
-	emailRepository := repository.NewEmailRepository()
+	emailFrom := os.Getenv("EMAIL_FROM")
+	filePath := os.Getenv("DB_FILE_NAME")
+
+	emailRepository := repository.NewEmailRepository(filePath)
+
+	emailSenderService := service.NewEmailSenderService(emailFrom)
 	emailService := service.NewEmailService(emailRepository)
 
-	services := service.NewServices(nil, emailService)
+	services := service.NewServices(nil, emailSenderService, emailService)
 	newHandlers := handler.NewHandlers(services)
 
 	router.POST("/subscribe", newHandlers.Subscribe)
