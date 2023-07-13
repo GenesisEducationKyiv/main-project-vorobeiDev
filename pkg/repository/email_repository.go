@@ -12,9 +12,7 @@ type EmailRepository struct {
 	filePath string
 }
 
-func NewEmailRepository() *EmailRepository {
-	filePath := os.Getenv("DB_FILE_NAME")
-
+func NewEmailRepository(filePath string) *EmailRepository {
 	return &EmailRepository{
 		filePath: filePath,
 	}

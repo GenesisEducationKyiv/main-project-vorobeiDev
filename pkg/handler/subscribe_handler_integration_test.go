@@ -35,12 +35,15 @@ func TestSubscribeIntegration(t *testing.T) {
 	router := gin.New()
 
 	emailFrom := os.Getenv("EMAIL_FROM")
+	filePath := os.Getenv("DB_FILE_NAME")
+
+	emailRepository := repository.NewEmailRepository(filePath)
 
 	emailSenderService := service.NewEmailSenderService(emailFrom)
-	services := service.NewServices(nil, emailSenderService)
-	emailRepository := repository.NewEmailRepository()
-	repositories := repository.NewRepositories(emailRepository)
-	newHandlers := handler.NewHandlers(services, repositories)
+	emailService := service.NewEmailService(emailRepository)
+
+	services := service.NewServices(nil, emailSenderService, emailService)
+	newHandlers := handler.NewHandlers(services)
 
 	router.POST("/subscribe", newHandlers.Subscribe)
 

@@ -10,14 +10,25 @@ type IEmailSenderService interface {
 	Send(toEmail string, btcRate float64) error
 }
 
-type Services struct {
-	CurrencyService ICurrencyService
-	EmailSender     IEmailSenderService
+type IFileService interface {
+	Save(email string) error
+	AllEmails() ([]string, error)
 }
 
-func NewServices(currencyService ICurrencyService, emailService IEmailSenderService) *Services {
+type Services struct {
+	CurrencyService    ICurrencyService
+	EmailSenderService IEmailSenderService
+	EmailService       IFileService
+}
+
+func NewServices(
+	currencyService ICurrencyService,
+	emailService IEmailSenderService,
+	fileService IFileService,
+) *Services {
 	return &Services{
-		CurrencyService: currencyService,
-		EmailSender:     emailService,
+		CurrencyService:    currencyService,
+		EmailSenderService: emailService,
+		EmailService:       fileService,
 	}
 }

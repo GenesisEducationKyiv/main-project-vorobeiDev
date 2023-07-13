@@ -26,7 +26,8 @@ func TestMain(m *testing.M) {
 }
 
 func TestEmailRepository_Save(t *testing.T) {
-	r := repository.NewEmailRepository()
+	filePath := os.Getenv("DB_FILE_NAME")
+	r := repository.NewEmailRepository(filePath)
 
 	if err := r.Save(defaultTestEmail); err != nil {
 		t.Fatalf("Expected nil error, got %v", err)
@@ -44,7 +45,8 @@ func TestEmailRepository_Save(t *testing.T) {
 }
 
 func TestEmailRepository_AllEmails(t *testing.T) {
-	r := repository.NewEmailRepository()
+	filePath := os.Getenv("DB_FILE_NAME")
+	r := repository.NewEmailRepository(filePath)
 
 	err := r.Save(defaultTestEmail)
 	if err == nil || !errors.Is(err, repository.ErrEmailExists) {
