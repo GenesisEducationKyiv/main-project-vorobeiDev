@@ -9,12 +9,13 @@
         ├── service
         │   ├── currency_service.go
         │   ├── email_service.go
+        │   ├── email_sender_service.go
         │   └── services.go
         ├── repository
         │   ├── email_repository.go
         │   └── email_repository_test.go
         └── handler
-            ├── email_handler.go
+            ├── send_email_handler.go
             ├── handlers.go
             ├── rate_handler.go
             ├── subscribe_handler.go
@@ -28,14 +29,15 @@
 - **pkg**: Directory that contains packages with specific functionalities.
   - **handler**: Contains handler packages responsible for handling HTTP requests.
     - **handlers.go**: General handler. And route registration method.
-    - **email_handler.go**: Handles sending emails to a list of email addresses.
+    - **send_email_handler.go**: Handles sending emails to a list of email addresses.
     - **rate_handler.go**: Handles retrieving the Bitcoin exchange rate in UAH.
     - **subscribe_handler.go**: Handles subscribing email addresses and writing them to a file.
     - **subscribe_handler_integration_test.go**: Integration test for handles subscribing email addresses and writing them to a file.
 
   - **service**: Contains service packages responsible for providing various functionalities.
     - **currency_service.go**: Implements functionality related to fetching the Bitcoin exchange rate in UAH (Ukrainian Hryvnia) using CoinGecko API.
-    - **email_service.go**: Implements functionality for sending emails using SMTP.
+    - **email_sender_service.go**: Implements functionality for sending emails using SMTP.
+    - **email_service.go**: Implements functionality for working with the email repo.
     - **services**: General file for methods implementing.
     
   - **repository**
