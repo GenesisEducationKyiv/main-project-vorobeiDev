@@ -1,4 +1,4 @@
-package service
+package currency
 
 import (
 	"context"
@@ -8,21 +8,21 @@ import (
 	"net/http"
 )
 
-type CurrencyService struct {
+type Service struct {
 	baseURL    string
 	httpClient *http.Client
 }
 
-type CurrencyResponse map[string]map[string]float64
+type Response map[string]map[string]float64
 
-func NewCurrencyService(url string) *CurrencyService {
-	return &CurrencyService{
+func NewCurrencyService(url string) *Service {
+	return &Service{
 		baseURL:    url,
 		httpClient: http.DefaultClient,
 	}
 }
 
-func (s *CurrencyService) GetPrice(ctx context.Context, from string, to string) (float64, error) {
+func (s *Service) GetPrice(ctx context.Context, from string, to string) (float64, error) {
 	url := fmt.Sprintf("%s/api/v3/simple/price?ids=%s&vs_currencies=%s", s.baseURL, from, to)
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -42,7 +42,7 @@ func (s *CurrencyService) GetPrice(ctx context.Context, from string, to string) 
 		return 0, err
 	}
 
-	var data CurrencyResponse
+	var data Response
 	if err = json.Unmarshal(body, &data); err != nil {
 		return 0, err
 	}

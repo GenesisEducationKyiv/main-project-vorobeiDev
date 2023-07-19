@@ -1,25 +1,25 @@
-package service
+package notification
 
 import (
 	"fmt"
 	"net/smtp"
 )
 
-type EmailSenderService struct {
+type Service struct {
 	auth      smtp.Auth
 	emailFrom string
 }
 
-func NewEmailSenderService(emailFrom string) *EmailSenderService {
+func NewNotificationService(emailFrom string) *Service {
 	auth := smtp.PlainAuth("", "user@example.com", "password", "smtp.example.com")
 
-	return &EmailSenderService{
+	return &Service{
 		auth:      auth,
 		emailFrom: emailFrom,
 	}
 }
 
-func (s *EmailSenderService) Send(toEmail string, btcRate float64) error {
+func (s *Service) Send(toEmail string, btcRate float64) error {
 	msg := fmt.Sprintf(
 		"From: %s\nTo: %s\nSubject: BTC Rate\n\nCurrent BTC rate is %f UAH",
 		s.emailFrom,
