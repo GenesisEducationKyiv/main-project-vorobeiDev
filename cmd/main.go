@@ -1,15 +1,14 @@
 package main
 
 import (
-	"github.com/vorobeiDev/crypto-client/pkg/repository"
 	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
-	"github.com/vorobeiDev/crypto-client/pkg/handler"
-	"github.com/vorobeiDev/crypto-client/pkg/service"
+	"github.com/vorobeiDev/crypto-client/internal/controller"
+	"github.com/vorobeiDev/crypto-client/internal/services"
 )
 
 func main() {
@@ -23,24 +22,11 @@ func main() {
 		port = "5000"
 	}
 
-	currencyURL := os.Getenv("COINGECKO_BASE_URL")
-	emailFrom := os.Getenv("EMAIL_FROM")
-	filePath := os.Getenv("DB_FILE_NAME")
+	newServices := services.NewServices()
+	server := gin.Default()
+	controller.RegisterRoutes(server, newServices)
 
-	emailRepository := repository.NewEmailRepository(filePath)
-
-	currencyService := service.NewCurrencyService(currencyURL)
-	emailSenderService := service.NewEmailSenderService(emailFrom)
-	fileService := service.NewEmailService(emailRepository)
-
-	services := service.NewServices(currencyService, emailSenderService, fileService)
-
-	handlers := handler.NewHandlers(services)
-
-	r := gin.Default()
-	handlers.RegisterRoutes(r)
-
-	err = r.Run(":" + port)
+	err = server.Run(":" + port)
 	if err != nil {
 		log.Fatal(err)
 	}
